@@ -1,0 +1,28 @@
+[package]
+name = "ism6hg256x-rs"
+version = "1.0.0"
+edition = "2024"
+rust-version = "1.86.0"
+readme = "README.md"
+license = "BSD-3-Clause"
+categories = ["embedded", "no-std"]
+keywords = ["st", "mems", "imu", "mlc", "fsm"]
+repository = "https://github.com/STMicroelectronics/ism6hg256x-rs"
+description = """
+    Driver for the ISM6HG256X IMU, featuring low-g (±16g) and high-g (±256g) accelerometers,
+    a gyroscope, and quad-channel architecture for advanced acceleration and angular rate processing.
+    Includes FSM/MLC modules for AI, IoT, and adaptive self-configuration, ideal for edge computing and shock detection.
+"""
+
+[dependencies]
+embedded-hal = "1.0.0"
+bitfield-struct = "0.11.0"
+half = { version = "2.6", default-features = false }
+st-mems-bus = "1.0.0"
+derive_more = { version = "2.0.1", default-features = false, features = ["try_from"] }
+st-mem-bank-macro = "1.0.0"
+
+# By default the bit order is assumed as Least Significant Bit.
+[features]
+default = []
+bit_order_msb = []
