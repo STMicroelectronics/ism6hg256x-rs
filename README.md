@@ -29,7 +29,7 @@ Add the driver to your `Cargo.toml` dependencies:
 
 ```toml
 [dependencies]
-ism6hg256x-rs = "1.0.0"
+ism6hg256x-rs = "2.0.0"
 ```
 
 Or, add it directly from the terminal:
@@ -40,9 +40,28 @@ cargo add ism6hg256x-rs
 
 ## Usage
 
-Include the crate and its prelude
+By default, the create exposes the **asynchronous** API, and it could be included using:
 ```rust
-use ism6hg256x_rs as ism6hg256x;
+use ism6hg256x_rs::asynchronous as ism6hg256x;
+use ism6hg256x::*;
+use ism6hg256x::prelude::*;
+```
+
+### Blocking API (optional feature)
+
+To use the **blocking** API instead of the asynchronous one, disable default features and enable the `blocking` feature in your Cargo.toml
+```toml
+[dependencies]
+ism6hg256x-rs = { version = "2.0.0", default-features = false, features = ["blocking"] }
+```
+or from the terminal:
+```sh
+cargo add ism6hg256x-rs --no-default-features --features blocking
+```
+
+Then import the blocking API:
+```rust
+use ism6hg256x_rs::blocking as ism6hg256x;
 use ism6hg256x::*;
 use ism6hg256x::prelude::*;
 ```
