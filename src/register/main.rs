@@ -1,6 +1,7 @@
 use crate::Error;
 use crate::Ism6hg256x;
 use bitfield_struct::bitfield;
+use core::fmt::Debug;
 use derive_more::TryFrom;
 use embedded_hal::delay::DelayNs;
 use st_mem_bank_macro::{named_register, register};
@@ -1223,6 +1224,7 @@ pub struct HgWakeUpThs {
 #[register(address = Reg::InactivityDur, access_type = Ism6hg256x, generics = 2)]
 #[cfg_attr(feature = "bit_order_msb", bitfield(u8, order = Msb))]
 #[cfg_attr(not(feature = "bit_order_msb"), bitfield(u8, order = Lsb))]
+#[derive(PartialEq)]
 pub struct InactivityDur {
     /// Duration in transition from inactivity to activity (2 bits)
     #[bits(2)]
@@ -1851,6 +1853,7 @@ pub struct FifoDataOutTag {
 #[register(address = Reg::FifoDataOutXL, access_type = Ism6hg256x, generics = 2)]
 pub struct FifoDataOutXYZ(pub [u8; 6]);
 
+#[derive(Debug, PartialEq, Clone)]
 pub struct XlOffsetMg {
     pub z_mg: f32,
     pub y_mg: f32,
@@ -1878,25 +1881,25 @@ pub struct HgEvent {
     pub hg_shock_change: u8,
 }
 
-#[derive(Default)]
+#[derive(Default, Debug, PartialEq, Clone)]
 pub struct HgWakeUpCfg {
     pub hg_wakeup_ths: u8,
     pub hg_shock_dur: u8,
 }
 
-#[derive(Default)]
+#[derive(Default, Debug, PartialEq, Clone)]
 pub struct HgWuInterruptCfg {
     pub hg_interrupts_enable: u8,
     pub hg_wakeup_int_sel: u8,
 }
 
-#[derive(Default)]
+#[derive(Default, Debug, PartialEq, Clone)]
 pub struct InterruptMode {
     pub enable: u8,
     pub lir: u8,
 }
 
-#[derive(Default)]
+#[derive(Default, Debug, Clone, PartialEq)]
 pub struct PinInt1Route {
     pub drdy_xl: u8,
     pub drdy_g: u8,
@@ -1963,7 +1966,7 @@ pub struct PinIntRouteEmb {
     pub mlc8: u8,
 }
 
-#[derive(Default)]
+#[derive(Default, Debug, PartialEq)]
 pub struct DataReady {
     pub drdy_hgxl: u8,
     pub drdy_xl: u8,
@@ -1971,7 +1974,7 @@ pub struct DataReady {
     pub drdy_temp: u8,
 }
 
-#[derive(Default)]
+#[derive(Default, Debug, PartialEq)]
 pub struct FifoStatus {
     // Number of element stored in the fifo
     pub fifo_level: u16,
@@ -1985,7 +1988,7 @@ pub struct FifoStatus {
     pub fifo_th: u8,
 }
 
-#[derive(Default)]
+#[derive(Default, Debug, PartialEq, Clone)]
 pub struct FiltSettlingMask {
     pub drdy: u8,
     pub ois_drdy: u8,
@@ -1994,40 +1997,40 @@ pub struct FiltSettlingMask {
     pub irq_g: u8,
 }
 
-#[derive(Default)]
+#[derive(Default, Debug, PartialEq, Clone)]
 pub struct OisHandshake {
     pub ack: u8,
     pub req: u8,
 }
 
-#[derive(Default)]
+#[derive(Default, Debug, PartialEq, Clone)]
 pub struct OisChain {
     pub gy: u8,
     pub xl: u8,
 }
 
-#[derive(Default)]
+#[derive(Default, Debug, PartialEq, Clone)]
 pub struct TapDetection {
     pub tap_x_en: u8,
     pub tap_y_en: u8,
     pub tap_z_en: u8,
 }
 
-#[derive(Default)]
+#[derive(Default, Debug, PartialEq, Clone)]
 pub struct TapThresholds {
     pub x: u8,
     pub y: u8,
     pub z: u8,
 }
 
-#[derive(Default)]
+#[derive(Default, Debug, PartialEq, Clone)]
 pub struct TapTimeWindows {
     pub shock: u8,
     pub quiet: u8,
     pub tap_gap: u8,
 }
 
-#[derive(Default)]
+#[derive(Default, Debug, PartialEq, Clone)]
 pub struct ActThresholds {
     pub inactivity_cfg: InactivityDur,
     pub inactivity_ths: u8,
@@ -2035,20 +2038,21 @@ pub struct ActThresholds {
     pub duration: u8,
 }
 
-#[derive(Default)]
+#[derive(Default, Debug, PartialEq, Clone)]
 pub struct ActWkupTimeWindows {
     pub shock: u8,
     pub quiet: u8,
 }
 
 #[allow(dead_code)]
-#[derive(Default)]
+#[derive(Default, Debug, PartialEq, Clone)]
 pub struct FifoOutRaw {
     pub tag: Tag,
     pub cnt: u8,
     pub data: [u8; 6],
 }
 
+#[derive(Default, Debug, PartialEq, Clone)]
 pub struct I3cConfig {
     pub if2_ta0_pid: u8,
     pub rst_mode: RstMode,
@@ -2076,7 +2080,7 @@ pub enum Reset {
 /// Includes standard and high-accuracy ODR modes with various frequencies.
 /// The high-accuracy modes are indicated by higher bits set.
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, Debug, TryFrom)]
 #[try_from(repr)]
 pub enum DataRate {
     /// Output data rate off (default).
@@ -2190,7 +2194,7 @@ pub enum HgXlDataRate {
 
 /// Accelerometer operating mode selection.
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, Debug, TryFrom)]
 #[try_from(repr)]
 pub enum XlMode {
     /// High-performance mode (default).
@@ -2212,7 +2216,7 @@ pub enum XlMode {
 
 /// Gyroscope operating mode selection.
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, Debug, TryFrom)]
 #[try_from(repr)]
 pub enum GyMode {
     /// High-performance mode (default).
@@ -2230,7 +2234,7 @@ pub enum GyMode {
 
 /// Data ready signal mode.
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, Debug, TryFrom)]
 #[try_from(repr)]
 pub enum DataReadyMode {
     /// Latched mode (default).
@@ -2242,7 +2246,7 @@ pub enum DataReadyMode {
 
 /// Gyroscope full-scale selection.
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, Debug, TryFrom)]
 #[try_from(repr)]
 pub enum GyFullScale {
     /// ±250 dps (default).
@@ -2260,7 +2264,7 @@ pub enum GyFullScale {
 
 /// Accelerometer full-scale selection.
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, Debug, TryFrom)]
 #[try_from(repr)]
 pub enum XlFullScale {
     /// ±2 g (default).
@@ -2288,7 +2292,7 @@ pub enum XlFilter {
 
 /// High-G accelerometer full-scale selection.
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, Debug, TryFrom)]
 #[try_from(repr)]
 pub enum HgXlFullScale {
     /// ±32 g (default).
@@ -2304,7 +2308,7 @@ pub enum HgXlFullScale {
 
 /// Accelerometer and gyroscope self-test selection.
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, Debug, TryFrom)]
 #[try_from(repr)]
 pub enum SelfTest {
     /// Self-test disabled (default).
@@ -2318,7 +2322,7 @@ pub enum SelfTest {
 
 /// INT2 pin input trigger polarity.
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, TryFrom, Debug)]
 #[try_from(repr)]
 pub enum DenPolarity {
     /// Active low (default).
@@ -2330,7 +2334,7 @@ pub enum DenPolarity {
 
 /// Gyroscope full-scale selection for EIS channel.
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, TryFrom, Debug)]
 #[try_from(repr)]
 pub enum EisGyFullScale {
     /// ±250 dps (default).
@@ -2362,7 +2366,7 @@ pub enum EisGyDataRate {
 
 /// FIFO compression algorithm selection.
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, TryFrom, Debug)]
 #[try_from(repr)]
 pub enum FifoCompressAlgo {
     /// Compression disabled (default).
@@ -2378,7 +2382,7 @@ pub enum FifoCompressAlgo {
 
 /// FIFO batch data rate selection.
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, Debug, TryFrom)]
 #[try_from(repr)]
 pub enum FifoBatch {
     /// Not batched (default).
@@ -2412,7 +2416,7 @@ pub enum FifoBatch {
 
 /// FIFO mode selection.
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, Debug, TryFrom)]
 #[try_from(repr)]
 pub enum FifoMode {
     /// Bypass mode: FIFO disabled (default).
@@ -2434,7 +2438,7 @@ pub enum FifoMode {
 
 /// Batch data rate (write frequency in FIFO) for temperature data.
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, Debug, TryFrom)]
 #[try_from(repr)]
 pub enum FifoTempBatch {
     /// Temperature not batched (default).
@@ -2452,7 +2456,7 @@ pub enum FifoTempBatch {
 ///
 /// Write rate is the maximum rate between accelerometer and gyroscope BDR divided by decimation factor.
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, Debug, TryFrom)]
 #[try_from(repr)]
 pub enum FifoTimestampBatch {
     /// Timestamp not batched (default).
@@ -2468,7 +2472,7 @@ pub enum FifoTimestampBatch {
 
 /// Trigger for the internal counter of batch events.
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, Debug, TryFrom)]
 #[try_from(repr)]
 pub enum FifoBatchCntEvent {
     /// Low-g accelerometer batch event (default).
@@ -2484,7 +2488,7 @@ pub enum FifoBatchCntEvent {
 
 /// Protocol anti-spike filter configuration.
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, Debug, TryFrom)]
 #[try_from(repr)]
 pub enum FiltAntiSpike {
     /// Antispike filters managed by protocol (default).
@@ -2520,7 +2524,7 @@ pub enum FiltLpBandwidth {
 
 /// Accelerometer high-pass filter mode.
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, Debug, TryFrom)]
 #[try_from(repr)]
 pub enum FiltXlHpMode {
     /// Normal mode (default).
@@ -2533,7 +2537,7 @@ pub enum FiltXlHpMode {
 
 /// Filter selection for wake-up and activity/inactivity functions.
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, Debug, TryFrom)]
 #[try_from(repr)]
 pub enum FiltWkupActFeed {
     /// Slope filter applied (default).
@@ -2547,7 +2551,7 @@ pub enum FiltWkupActFeed {
 
 /// LPF2 filter on 6D (sixd) function selection.
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, Debug, TryFrom)]
 #[try_from(repr)]
 pub enum FiltSixdFeed {
     /// ODR divided by 2 (default).
@@ -2559,7 +2563,7 @@ pub enum FiltSixdFeed {
 
 /// Gyroscope digital LPF_EIS filter bandwidth selection.
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, Debug, TryFrom)]
 #[try_from(repr)]
 pub enum FiltGyEisLpBandwidth {
     /// Normal bandwidth (default).
@@ -2571,7 +2575,7 @@ pub enum FiltGyEisLpBandwidth {
 
 /// Gyroscope OIS digital LPF1 filter bandwidth selection.
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, Debug, TryFrom)]
 #[try_from(repr)]
 pub enum FiltGyOisLpBandwidth {
     /// Normal bandwidth (default).
@@ -2587,7 +2591,7 @@ pub enum FiltGyOisLpBandwidth {
 
 /// Accelerometer OIS channel bandwidth selection.
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, Debug, TryFrom)]
 #[try_from(repr)]
 pub enum FiltXlOisLpBandwidth {
     /// Ultra light bandwidth (default).
@@ -2611,7 +2615,7 @@ pub enum FiltXlOisLpBandwidth {
 
 /// FSM permission to write control registers.
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, Debug, TryFrom)]
 #[try_from(repr)]
 pub enum FsmPermission {
     /// Protect control registers from FSM write.
@@ -2625,7 +2629,7 @@ pub enum FsmPermission {
 ///
 /// Defines the threshold for free-fall detection.
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, Debug, TryFrom)]
 #[try_from(repr)]
 pub enum FfThreshold {
     /// 156 mg threshold (default).
@@ -2652,7 +2656,7 @@ pub enum FfThreshold {
 /// - `FromOis`: OIS chain full control from auxiliary interface (default).
 /// - `FromUi`: OIS chain full control from primary interface.
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, Debug, TryFrom)]
 #[try_from(repr)]
 pub enum OisCtrlMode {
     /// Control from auxiliary interface (OIS).
@@ -2664,7 +2668,7 @@ pub enum OisCtrlMode {
 
 /// Gyroscope OIS full-scale selection.
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, Debug, TryFrom)]
 #[try_from(repr)]
 pub enum OisGyFullScale {
     /// ±250 dps (default).
@@ -2680,7 +2684,7 @@ pub enum OisGyFullScale {
 
 /// Accelerometer OIS full-scale selection.
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, Debug, TryFrom)]
 #[try_from(repr)]
 pub enum OisXlFullScale {
     /// ±2 g (default).
@@ -2696,7 +2700,7 @@ pub enum OisXlFullScale {
 
 /// Threshold for 4D/6D function.
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, Debug, TryFrom)]
 #[try_from(repr)]
 pub enum SixdThreshold {
     /// 80 degrees threshold (default).
@@ -2712,7 +2716,7 @@ pub enum SixdThreshold {
 
 /// UI I2C and MIPI I3C interface mode.
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, Debug, TryFrom)]
 #[try_from(repr)]
 pub enum UiI2cI3cMode {
     /// SPI, I2C, and MIPI I3C interfaces enabled.
@@ -2728,7 +2732,7 @@ pub enum UiI2cI3cMode {
 /// - `Middle`: Intermediate strength (recommended for 2.0 V ≤ VDDIO < 3.0 V).
 /// - `High`: Highest strength (recommended for VDDIO < 2.0 V, default).
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, Debug, TryFrom)]
 #[try_from(repr)]
 pub enum PadStrength {
     /// Lowest drive strength.
@@ -2745,7 +2749,7 @@ pub enum PadStrength {
 /// - `Spi4Wire`: 4-wire SPI interface (default).
 /// - `Spi3Wire`: 3-wire SPI interface.
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, Debug, TryFrom)]
 #[try_from(repr)]
 pub enum SpiMode {
     /// 4-wire SPI interface.
@@ -2759,7 +2763,7 @@ pub enum SpiMode {
 ///
 /// Defines the priority order of axes for tap detection.
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, Debug, TryFrom)]
 #[try_from(repr)]
 pub enum TapAxisPriority {
     /// X > Y > Z priority.
@@ -2779,7 +2783,7 @@ pub enum TapAxisPriority {
 
 /// Tap mode selection.
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, Debug, TryFrom)]
 #[try_from(repr)]
 pub enum TapMode {
     /// Only single-tap event enabled.
@@ -2796,7 +2800,7 @@ pub enum TapMode {
 /// - `XlLowPowerGySleep`: Accelerometer in low-power mode 1; gyroscope in sleep mode.
 /// - `XlLowPowerGyPowerDown`: Accelerometer in low-power mode 1; gyroscope in power-down mode.
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, Debug, TryFrom)]
 #[try_from(repr)]
 pub enum ActMode {
     /// Stationary/motion-only interrupts; no config change.
@@ -2812,7 +2816,7 @@ pub enum ActMode {
 
 /// Duration in transition from inactivity to activity.
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, Debug, TryFrom)]
 #[try_from(repr)]
 pub enum ActFromSleepToActDur {
     /// Immediate transition at first over-threshold event.
@@ -2828,7 +2832,7 @@ pub enum ActFromSleepToActDur {
 
 /// Accelerometer output data rate during inactivity.
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, Debug, TryFrom)]
 #[try_from(repr)]
 pub enum ActSleepXlOdr {
     /// 1.875 Hz output data rate.
@@ -2844,7 +2848,7 @@ pub enum ActSleepXlOdr {
 
 /// In-band interrupt (IBI) bus available time selection.
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, Debug, TryFrom)]
 #[try_from(repr)]
 pub enum IbiTime {
     /// 50 microseconds bus available time.
@@ -2860,7 +2864,7 @@ pub enum IbiTime {
 
 /// Reset mode after "reset whole chip" I3C pattern.
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, Debug, TryFrom)]
 #[try_from(repr)]
 pub enum RstMode {
     /// Configuration reset (software reset + dynamic address reset).
@@ -2871,7 +2875,7 @@ pub enum RstMode {
 }
 
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Default, TryFrom)]
+#[derive(Clone, Copy, PartialEq, Default, Debug, TryFrom)]
 #[try_from(repr)]
 pub enum Tag {
     #[default]
