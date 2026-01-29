@@ -14,6 +14,9 @@ description = """
     Includes FSM/MLC modules for AI, IoT, and adaptive self-configuration, ideal for edge computing and shock detection.
 """
 
+[lib]
+doctest = false
+
 [dependencies]
 bisync = "0.3.0"
 embedded-hal = "1.0.0"
